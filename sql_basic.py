@@ -8,34 +8,35 @@ try:
     conn = psycopg2.connect(connect_str)
     # set autocommit option, to do every query when we call it
     conn.autocommit = True
-    # create a psycopg2 cursor that can execute queries
 except Exception as e:
     print("Uh oh, can't connect. Invalid dbname, user or password?")
     print(e)
 
 
-def execute_query(sql_query):
+def execute_sql_statement(sql_statement):
     cursor = conn.cursor()
-    cursor.execute(sql_query)
+    cursor.execute(sql_statement)
     return cursor
 
 
 def main_menu():
     print('''
-    This is the menu.
-    1.
-    2.
-    3.
-    4.
-    5.
-    6.
-    7.
-    Gimme an input:''')
-    answer = input('> ')
-    while answer != '8':
+    Dear HR, this is the menu.
+    1. Returns the two name columns of the mentors table.
+    2. Returns the nick_name-s of all mentors working at Miskolc.
+    3. Returns Carols full name and telephone number.
+    4. Returns full name and telephone number of the gril who went to Adipiscingenimmi University.
+    5. Inserts a new row for Markus Schaffarzyk into the applicants table.
+    6. Updates Jemima Foremans telephone number.
+    7. Deletes everybody from the applicants table with 'mauriseu.net' domain name in their email address.
+    8. Deletes row from applicants with application_number 54823.
+    0. Quits the program.
+    Choose a number from the above list:''')
+    answer = 666
+    while answer != '0':
         answer = input('> ')
         if answer == '1':
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    SELECT first_name,last_name
                                    FROM mentors;
                                    """)
@@ -44,7 +45,7 @@ def main_menu():
             print('\n')
 
         elif answer == '2':
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    SELECT nick_name
                                    FROM mentors
                                    WHERE city='Miskolc';
@@ -54,7 +55,7 @@ def main_menu():
             print('\n')
 
         elif answer == '3':
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    SELECT CONCAT(first_name, ' ', last_name), phone_number
                                    FROM applicants
                                    AS full_name
@@ -65,7 +66,7 @@ def main_menu():
             print('\n')
 
         elif answer == '4':
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    SELECT CONCAT(first_name, ' ', last_name), phone_number
                                    FROM applicants
                                    AS full_name
@@ -77,13 +78,13 @@ def main_menu():
             print('\n')
 
         elif answer == '5':
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    INSERT INTO applicants (first_name, last_name, phone_number, 
                                    email, application_code)
                                    VALUES ('Markus', 'Schaffarzyk', '003620/725-2666',
                                    'djnovus@groovecoverage.com', 54823);
                                    """)
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    SELECT *
                                    FROM applicants
                                    WHERE application_code='54823';""")
@@ -92,12 +93,12 @@ def main_menu():
             print('\n')
 
         elif answer == '6':
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    UPDATE applicants
                                    SET phone_number='003670/223-7459'
                                    WHERE first_name='Jemima' AND last_name='Foreman';
                                    """)
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""
                                    SELECT *
                                    FROM applicants
                                    WHERE first_name='Jemima' AND last_name='Foreman';""")
@@ -105,8 +106,16 @@ def main_menu():
             print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
             print('\n')
         elif answer == '7':
-            cursor = execute_query("""DELETE FROM applicants WHERE email LIKE '%mauriseu.net';""")
-            cursor = execute_query("""
+            cursor = execute_sql_statement("""DELETE FROM applicants WHERE email LIKE '%mauriseu.net';""")
+            cursor = execute_sql_statement("""
+                                   SELECT *
+                                   FROM applicants;""")
+            rows = cursor.fetchall()
+            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
+            print('\n')
+        elif answer == '8':
+            cursor = execute_sql_statement("""DELETE FROM applicants WHERE application_code='54823';""")
+            cursor = execute_sql_statement("""
                                    SELECT *
                                    FROM applicants;""")
             rows = cursor.fetchall()
