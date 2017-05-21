@@ -1,22 +1,35 @@
 import psycopg2
 from tabulate import tabulate  # https://pypi.python.org/pypi/tabulate
 
-try:
-    # setup connection string
-    connect_str = "dbname='szabadon' user='szabadon' host='localhost' password='pringles'"
-    # use our connection values to establish a connection
-    conn = psycopg2.connect(connect_str)
-    # set autocommit option, to do every query when we call it
-    conn.autocommit = True
-except Exception as e:
-    print("Uh oh, can't connect. Invalid dbname, user or password?")
-    print(e)
-
 
 def execute_sql_statement(sql_statement):
+    try:
+        # setup connection string
+        connect_str = "dbname='szabadon' user='szabadon' host='localhost' password='pringles'"
+        # use our connection values to establish a connection
+        conn = psycopg2.connect(connect_str)
+        # set autocommit option, to do every query when we call it
+        conn.autocommit = True
+    except Exception as e:
+        print("Uh oh, can't connect. Invalid dbname, user or password?")
+        print(e)
     cursor = conn.cursor()
     cursor.execute(sql_statement)
     return cursor
+
+
+def select_and_print_db_table(WHERE=None):
+    sql_statement = """SELECT * FROM applicants {};""".format(WHERE)
+    cursor = execute_sql_statement(sql_statement)
+    rows = cursor.fetchall()
+    print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
+    print('\n')
+
+
+def print_db_table(cursor):
+    rows = cursor.fetchall()
+    print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
+    print('\n')
 
 
 def main_menu():
@@ -40,9 +53,7 @@ def main_menu():
                                    SELECT first_name,last_name
                                    FROM mentors;
                                    """)
-            rows = cursor.fetchall()
-            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
-            print('\n')
+            print_db_table(cursor)
 
         elif answer == '2':
             cursor = execute_sql_statement("""
@@ -50,9 +61,7 @@ def main_menu():
                                    FROM mentors
                                    WHERE city='Miskolc';
                                    """)
-            rows = cursor.fetchall()
-            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
-            print('\n')
+            print_db_table(cursor)
 
         elif answer == '3':
             cursor = execute_sql_statement("""
@@ -84,13 +93,7 @@ def main_menu():
                                    VALUES ('Markus', 'Schaffarzyk', '003620/725-2666',
                                    'djnovus@groovecoverage.com', 54823);
                                    """)
-            cursor = execute_sql_statement("""
-                                   SELECT *
-                                   FROM applicants
-                                   WHERE application_code='54823';""")
-            rows = cursor.fetchall()
-            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
-            print('\n')
+            select_and_print_db_table("WHERE application_code='54823'")
 
         elif answer == '6':
             cursor = execute_sql_statement("""
@@ -98,27 +101,19 @@ def main_menu():
                                    SET phone_number='003670/223-7459'
                                    WHERE first_name='Jemima' AND last_name='Foreman';
                                    """)
-            cursor = execute_sql_statement("""
-                                   SELECT *
-                                   FROM applicants
-                                   WHERE first_name='Jemima' AND last_name='Foreman';""")
-            rows = cursor.fetchall()
-            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
-            print('\n')
+            select_and_print_db_table("WHERE first_name='Jemima' AND last_name='Foreman'")
+
         elif answer == '7':
             cursor = execute_sql_statement("""DELETE FROM applicants WHERE email LIKE '%mauriseu.net';""")
-            cursor = execute_sql_statement("""
-                                   SELECT *
-                                   FROM applicants;""")
-            rows = cursor.fetchall()
-            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
-            print('\n')
+            select_and_print_db_table()
+
         elif answer == '8':
             cursor = execute_sql_statement("""DELETE FROM applicants WHERE application_code='54823';""")
-            cursor = execute_sql_statement("""
-                                   SELECT *
-                                   FROM applicants;""")
-            rows = cursor.fetchall()
-            print(tabulate(rows, headers=[desc[0] for desc in cursor.description]))
-            print('\n')
+            select_and_print_db_table()
+
+        elif answer == '0':
+            print('See you later!')
+
+        else:
+            print('Try a number from the main menu list above.')
 main_menu()
