@@ -31,7 +31,10 @@ def all_schools():
     BUT include all the schools, even if there's no mentor yet!
     columns: mentors.first_name, mentors.last_name, schools.name, schools.country
     '''
-    pass
+    data_set = execute_sql_statement("""SELECT mentors.first_name, mentors.last_name, schools.name, schools.country
+                                 FROM mentors RIGHT JOIN schools
+                                 ON (mentors.city=schools.city) ORDER BY mentors.id;""")
+    return render_template('table.html', columns=['first_name', 'last_name', 'schools_name', 'country'], data_set=data_set)
 
 
 @app.route('/mentors-by-country')
