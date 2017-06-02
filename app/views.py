@@ -44,7 +44,12 @@ def mentors_by_country():
      mentors per country ordered by the name of the countries
     columns: country, count
     '''
-    pass
+    data_set = execute_sql_statement("""SELECT COUNT(mentors.*), schools.country
+                                        FROM mentors JOIN schools
+                                        ON (mentors.city=schools.city)
+                                        GROUP BY schools.country
+                                        ORDER BY schools.country;""")
+    return render_template('table.html', columns=['number_of_mentors', 'country'], data_set=data_set)
 
 
 @app.route('/contacts')
