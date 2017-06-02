@@ -1,6 +1,6 @@
 from flask import render_template
 from app import app
-import db_handling
+from db_handling import execute_sql_statement
 
 
 @app.route('/')
@@ -16,7 +16,10 @@ def mentors_and_schools():
      ordered by the mentors id column (columns: mentors.first_name, mentors.last_name,
      schools.name, schools.country).
     '''
-    pass
+    data_set = execute_sql_statement("""SELECT mentors.first_name, mentors.last_name, schools.name, schools.country
+                                 FROM mentors JOIN schools
+                                 ON (mentors.city=schools.city) ORDER BY mentors.id;""")
+    return render_template('table.html', columns=['first_name', 'last_name', 'schools_name', 'country'], data_set=data_set)
 
 
 @app.route('/all-school')
