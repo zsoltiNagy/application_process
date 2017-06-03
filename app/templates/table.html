@@ -8,13 +8,13 @@
     <tr> 
       {% for cell in row %}
       <td>
-          {% if cell is string %}
+        {% if cell is string %}
           {{ cell.decode('utf-8') }}
-          {% elif cell is number %}
+        {% elif cell is number %}
           {{ cell }}
-          {% else %}
+        {% else %}
           NULL
-          {% endif %}
+        {% endif %}
       </td>
       {% endfor %}
     </tr>
