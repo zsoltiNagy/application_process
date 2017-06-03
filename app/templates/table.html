@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-<table>
+<table id="app-po-table-main">
     {% for column in columns %}
-    <th> {{column}} </th>
+    <th class="app-po-table-heads"> {{column}} </th>
     {% endfor %}
     {% for row in data_set %}
-    <tr> 
+    <tr class="app-po-table-rows"> 
       {% for cell in row %}
-      <td>
+      <td class="app-po-table-cells">
         {% if not cell %}
-          NULL
+          None
         {% elif cell is string %}
           {{ cell.decode('utf-8') }}
         {% else %}
