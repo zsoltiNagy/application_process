@@ -18,9 +18,11 @@ def mentors_and_schools():
     '''
     data_set = execute_sql_statement("""SELECT mentors.first_name, mentors.last_name, schools.name, schools.country
                                         FROM mentors JOIN schools
-                                        ON (mentors.city=schools.city) 
+                                        ON (mentors.city=schools.city)
                                         ORDER BY mentors.id;""")
-    return render_template('table.html', columns=['first_name', 'last_name', 'schools_name', 'country'], data_set=data_set)
+    return render_template('table.html',
+                           columns=['first_name', 'last_name', 'schools_name', 'country'],
+                           data_set=data_set)
 
 
 @app.route('/all-school')
@@ -34,9 +36,11 @@ def all_schools():
     '''
     data_set = execute_sql_statement("""SELECT mentors.first_name, mentors.last_name, schools.name, schools.country
                                         FROM mentors RIGHT JOIN schools
-                                        ON (mentors.city=schools.city) 
+                                        ON (mentors.city=schools.city)
                                         ORDER BY mentors.id;""")
-    return render_template('table.html', columns=['first_name', 'last_name', 'schools_name', 'country'], data_set=data_set)
+    return render_template('table.html',
+                           columns=['First Name', 'Last Name', 'Schools Name', 'Country'],
+                           data_set=data_set)
 
 
 @app.route('/mentors-by-country')
@@ -51,7 +55,9 @@ def mentors_by_country():
                                         ON (mentors.city=schools.city)
                                         GROUP BY schools.country
                                         ORDER BY schools.country;""")
-    return render_template('table.html', columns=['number_of_mentors', 'country'], data_set=data_set)
+    return render_template('table.html',
+                           columns=['Number of Mentors', 'Country'],
+                           data_set=data_set)
 
 
 @app.route('/contacts')
@@ -65,7 +71,9 @@ def contacts():
     data_set = execute_sql_statement("""SELECT mentors.first_name, mentors.last_name, schools.name
                                         FROM mentors JOIN schools
                                         ON schools.contact_person=mentors.id;""")
-    return render_template('table.html', columns=['Schools Name', 'First Name', 'Last Name'], data_set=data_set)
+    return render_template('table.html',
+                           columns=['Schools Name', 'First Name', 'Last Name'],
+                           data_set=data_set)
 
 
 @app.route('/applicants')
@@ -77,7 +85,15 @@ def applicants():
     descending order BUT only for applications later than 2016-01-01
     columns: applicants.first_name, applicants.application_code, applicants_mentors.creation_date
     '''
-    pass
+    data_set = execute_sql_statement("""SELECT applicants.first_name, applicants.application_code,
+                                        applicants_mentors.creation_date
+                                        FROM applicants JOIN applicants_mentors
+                                        ON applicants.id=applicant_id
+                                        WHERE creation_date >'2016-01-01'
+                                        ORDER BY creation_date DESC;""")
+    return render_template('table.html',
+                           columns=['First Name', 'Application Code', 'Creation Date'],
+                           data_set=data_set)
 
 
 @app.route('/applicants-and-mentors')
@@ -91,4 +107,3 @@ def applicants_and_mentors():
     columns: applicants.first_name, applicants.application_code, mentor_first_name, mentor_last_name
     '''
     pass
-
